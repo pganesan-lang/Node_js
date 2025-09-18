@@ -7,7 +7,6 @@ const addExercises = async (req, res) => {
   const { description, duration, date } = req.body;
   const { id } = req.params;
 
-  // Validate user id
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ error: "Invalid user id" });
   }
@@ -19,10 +18,10 @@ const addExercises = async (req, res) => {
     }
 
     const createExercise = new exerciseObject({
-      userId: id, // id is a valid ObjectId string
+      userId: id,
       description,
       duration,
-      date,
+      date: date || new Date(),
     });
     await createExercise.save();
     res.status(201).json(createExercise);
@@ -57,8 +56,11 @@ const getUserLogs = async (req, res) => {
     if (to) dateFilter.$lte = new Date(to);
     if (from || to) query.date = dateFilter;
 
-    let exercise = await exerciseObject.find(query);
+    if (user === "Invaild User" || !user) {
+      return res.status(400).json({ error: "Invaild User" });
+    }
 
+    let exercise = await exerciseObject.find(query);
     if (limit) exercise = exercise.slice(0, limit);
 
     const result = {

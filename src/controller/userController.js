@@ -3,7 +3,6 @@ const userObject = require("../model/UserModal");
 
 const getUserByNameOrId = async (req, res) => {
   const name = req?.params?.name;
-
   let user;
   if (mongoose.Types.ObjectId.isValid(name)) {
     user = await userObject.findById(name);
@@ -21,6 +20,8 @@ const getUserById = async (data) => {
   try {
     if (mongoose.Types.ObjectId.isValid(data)) {
       user = await userObject.findById(data);
+    } else {
+      return "Invaild User";
     }
   } catch (e) {
     throw e.message;
@@ -36,8 +37,8 @@ const addUser = async (req, res) => {
     const addUser = new userObject({ username });
     await addUser.save();
     res.status(201).json(addUser);
-  } catch (err) {
-    res.status(400).json(err.message);
+  } catch {
+    res.status(400).json({ error: "User already exist" });
   }
 };
 

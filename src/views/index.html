@@ -22,7 +22,7 @@
       <form action="/api/users" method="post">
         <h2>Create a New User</h2>
         <p><code>POST /api/users</code></p>
-        <input id="uname" type="text" name="username" placeholder="username" />
+        <input id="uname" type="text" name="username" placeholder="username" required/>
         <input type="submit" value="Submit" />
       </form>
 
@@ -36,8 +36,8 @@
       <form action="/api/users/:param" method="get" id="get_user_by_name_form">
         <h2>Get User by name or ID</h2>
         <p><code>GET /api/users/{param}</code></p>
-        <input id="u_name" type="text" placeholder="Enter the name or ID" />
-        <input type="submit" value="Get User By name or ID" />
+        <input id="u_name" type="text" placeholder="Enter the name or ID" required/>
+        <input type="submit" value="Get User By name or ID"  /> 
       </form>
 
 
@@ -84,7 +84,7 @@
       >
         <strong> GET user's exercise log with filters: </strong>
     
-          <input id="uid_get_log_by_filter" type="text"  placeholder="id" />
+          <input id="uid_get_log_by_filter" type="text"  placeholder="id"  required/>
           <input
             id="from"
             type="text"
@@ -115,7 +115,7 @@
 
 
       exerciseForm.addEventListener("submit", () => {
-        const userId = document.getElementById("uid").value;
+        const userId = document.getElementById("uid").value||' ';
         exerciseForm.action = `/api/users/${userId}/exercises`;
 
         exerciseForm.submit();
@@ -135,7 +135,7 @@
       })
 
       getUserForm.addEventListener("submit",()=>{
-        const userName = document.getElementById("u_name").value;
+        const userName = document.getElementById("u_name").value ||' ';
         getUserForm.action = `/api/users/${userName}`;
 
         getUserForm.submit();
