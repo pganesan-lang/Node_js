@@ -14,37 +14,19 @@
     />
     <link href="style.css" rel="stylesheet" type="text/css" />
   </head>
-
   <body>
     <div class="container">
       <h1>Exercise tracker</h1>
-
       <form action="/api/users" method="post">
         <h2>Create a New User</h2>
         <p><code>POST /api/users</code></p>
-        <input id="uname" type="text" name="username" placeholder="username" required/>
+        <input id="uname" type="text" name="username" placeholder="username" />
         <input type="submit" value="Submit" />
       </form>
-
-      <form action="/api/users" method="get">
-        <h2>Get All User</h2>
-        <p><code>GET /api/users</code></p>
-        <input type="submit" value="Get All Users" />
-      </form>
-
-
-      <form action="/api/users/:param" method="get" id="get_user_by_name_form">
-        <h2>Get User by name or ID</h2>
-        <p><code>GET /api/users/{param}</code></p>
-        <input id="u_name" type="text" placeholder="Enter the name or ID" required/>
-        <input type="submit" value="Get User By name or ID"  /> 
-      </form>
-
-
       <form action="/api/users/:_id/exercises" id="exercise-form" method="post">
         <h2>Add exercises</h2>
-        <p><code>POST /api/users/{id}/exercises</code></p>
-        <input id="uid" type="text" name="id" placeholder="id" />
+        <p><code>POST /api/users/:_id/exercises</code></p>
+        <input id="uid" type="text" name=":_id" placeholder=":_id" />
         <input
           id="desc"
           type="text"
@@ -65,25 +47,21 @@
         />
         <input type="submit" value="Submit" />
       </form>
-
-      <form action="/api/users/exercises" method="get">
-        <h2>Get All Exercises</h2>
-        <p><code>GET api/users/exercises</code></p>
-        <input type="submit" value="Get All Exercises" />
-      </form>
-
       <p>
         <strong>GET user's exercise log: </strong>
         <code>GET /api/users/:_id/logs?[from][&amp;to][&amp;limit]</code>
       </p>
-
-      <form
+      <p><strong>[ ]</strong> = optional</p>
+      <p>
+        <strong>from, to</strong> = dates (yyyy-mm-dd); <strong>limit</strong> =
+        number
+      </p>
+         <form
         action="/api/users/:_id/logs?[from][&amp;to][&amp;limit]"
         method="get"
         id="get_log_by_filter_form"
       >
         <strong> GET user's exercise log with filters: </strong>
-    
           <input id="uid_get_log_by_filter" type="text"  placeholder="id"  required/>
           <input
             id="from"
@@ -107,21 +85,15 @@
         </form>
       </form>
     </div>
-
     <script>
-      const exerciseForm = document.getElementById("exercise-form");
       const logFrom=document.getElementById("get_log_by_filter_form");
-      const getUserForm=document.getElementById("get_user_by_name_form");
-
-
+      const exerciseForm = document.getElementById("exercise-form");
       exerciseForm.addEventListener("submit", () => {
-        const userId = document.getElementById("uid").value||' ';
+        const userId = document.getElementById("uid").value;
         exerciseForm.action = `/api/users/${userId}/exercises`;
-
         exerciseForm.submit();
       });
-     
-      logFrom.addEventListener("submit",()=>{
+       logFrom.addEventListener("submit",()=>{
        const userId = document.getElementById("uid_get_log_by_filter").value;
        const limit=document.getElementById("limit").value;
        const from=document.getElementById("from").value;
@@ -130,20 +102,8 @@
        to.name=to?"to":'';
        limit.name=limit ?"limit":'';
        logFrom.action=`/api/users/${userId}/logs`
-
        logFrom.submit()
       })
-
-      getUserForm.addEventListener("submit",()=>{
-        const userName = document.getElementById("u_name").value ||' ';
-        getUserForm.action = `/api/users/${userName}`;
-
-        getUserForm.submit();
-      })
-
-
-
-
     </script>
-  </body> 
+  </body>
 </html>
