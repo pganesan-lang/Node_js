@@ -42,43 +42,35 @@ const getAllExercises = async (req, res) => {
 const getUserLogs = async (req, res) => {
   try {
     const { id } = req.params;
-
     const user = await getUserById(id);
-
+    if (user === "Invaild User" || !user) {
+      return res.status(400).json({ error: "Invaild User" });
+    }
     const { from, to, limit } = req.query;
-
-    let query = {
-      userId: id,
-    };
-
+    let query = { userId: id };
     let dateFilter = {};
     if (from) dateFilter.$gte = new Date(from);
     if (to) dateFilter.$lte = new Date(to);
     if (from || to) query.date = dateFilter;
-
-    if (user === "Invaild User" || !user) {
-      return res.status(400).json({ error: "Invaild User" });
-    }
-
-    let exercise = await exerciseObject.find(query);
-    if (limit) exercise = exercise.slice(0, limit);
-
+    const count = await exerciseObject.countDocuments(query);
+    let logsQuery = exerciseObject.find(query).sort({ date: 1 });
+    if (limit) logsQuery = logsQuery.limit(Number(limit));
+    const logs = await logsQuery.exec();
     const result = {
       userId: id,
       name: user?.username,
-      logs: exercise?.map((item) => ({
+      count,
+      logs: logs.map((item) => ({
         description: item.description,
         duration: item.duration,
         date: item.date ? item.date.toDateString() : undefined,
       })),
     };
-
     res.status(200).json(result);
   } catch {
-    res.status(400).json("Someting went Wrong try again later");
+    res.status(400).json("Something went wrong, try again later");
   }
 };
-
 module.exports = {
   addExercises,
   getAllExercises,
