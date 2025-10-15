@@ -29,10 +29,12 @@
         <input id="uid" type="text" name=":_id" placeholder=":_id" />
         <input id="desc" type="text" name="description" placeholder="description*" />
         <input id="dur" type="number" name="duration" placeholder="duration* (mins.)" min="1" step="1" required />
-        <input id="date" type="text"
-          name="date"
-          placeholder="date (yyyy-mm-dd)"
-        />
+       <input type="text" 
+       name="date" 
+       id="date" 
+       placeholder="from (yyyy-mm-dd)" 
+       onfocus="(this.type='date')" 
+       onblur="if(!this.value)this.type='text'">
         <input type="submit" value="Submit" />
       </form>
       <p>
@@ -50,19 +52,11 @@
         id="get_log_by_filter_form"
       >
         <strong> GET user's exercise log with filters: </strong>
-          <input id="uid_get_log_by_filter" type="text"  placeholder="id"  required/>
-          <input
-            id="from"
-            type="text"
-            name="from"
-            placeholder="from (yyyy-mm-dd) (Optional)"
-          />
-          <input
-            id="to"
-            type="text"
-            name="to"
-            placeholder="to (yyyy-mm-dd) (Optional)"
-          />
+          <input id="uid_get_log_by_filter" type="text" placeholder="id" required />
+          <input type="text" name="from" id="from" placeholder="from (yyyy-mm-dd) (Optional)" onfocus="(this.type='date')"
+            onblur="if(!this.value)this.type='text'">
+           <input type="text" name="to" id="to" placeholder="to (yyyy-mm-dd) (Optional)" onfocus="(this.type='date')"
+            onblur="if(!this.value)this.type='text'">
           <input
             id="limit"
             type="number"
