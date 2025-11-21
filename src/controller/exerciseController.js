@@ -1,15 +1,37 @@
-const mongoose = require("mongoose");
 const userObject = require("../model/UserModal");
 const exerciseObject = require("../model/ExerciseModal");
 const { getUserById } = require("./userController");
+const {
+  validateDuration,
+  validateDate,
+  validateId,
+  validateDateRange,
+} = require("../utils/validation");
 
 const addExercises = async (req, res) => {
   const { description, duration, date } = req.body;
   const { id } = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ error: "Invalid user id" });
+  // Validate ID
+  const idValidation = validateId(id);
+  if (!idValidation.isValid) {
+    return res.status(400).json({ error: idValidation.error });
   }
+
+  // Validate duration
+  const durationValidation = validateDuration(duration);
+  if (!durationValidation.isValid) {
+    return res.status(400).json({ error: durationValidation.error });
+  }
+
+  // Validate date
+  const dateValidation = validateDate(date);
+  if (!dateValidation.isValid) {
+    return res.status(400).json({ error: dateValidation.error });
+  }
+
+  const parsedDuration = durationValidation?.value;
+  const exerciseDate = dateValidation?.value;
 
   try {
     const user = await userObject.findById(id);
@@ -18,10 +40,10 @@ const addExercises = async (req, res) => {
     }
 
     const createExercise = new exerciseObject({
-      userId: id,
+      userId: idValidation?.value,
       description,
-      duration,
-      date: date || new Date(),
+      duration: parsedDuration,
+      date: exerciseDate,
     });
     await createExercise.save();
     res.status(201).json(createExercise);
@@ -42,16 +64,39 @@ const getAllExercises = async (req, res) => {
 const getUserLogs = async (req, res) => {
   try {
     const { id } = req.params;
+    const { from, to, limit } = req.query;
+
+    // Validate ID
+    const idValidation = validateId(id);
+    if (!idValidation.isValid) {
+      return res.status(400).json({ error: idValidation.error });
+    }
+
     const user = await getUserById(id);
     if (user === "Invaild User" || !user) {
       return res.status(400).json({ error: "Invaild User" });
     }
-    const { from, to, limit } = req.query;
+
+    // Validate date range
+    const dateRangeValidation = validateDateRange(from, to);
+    if (!dateRangeValidation.isValid) {
+      return res.status(400).json({ error: dateRangeValidation.error });
+    }
+
     let query = { userId: id };
     let dateFilter = {};
-    if (from) dateFilter.$gte = new Date(from);
-    if (to) dateFilter.$lte = new Date(to);
-    if (from || to) query.date = dateFilter;
+
+    if (dateRangeValidation.from) {
+      dateFilter.$gte = dateRangeValidation.from;
+    }
+    if (dateRangeValidation.to) {
+      dateFilter.$lte = dateRangeValidation.to;
+    }
+
+    if (dateRangeValidation.from || dateRangeValidation.to) {
+      query.date = dateFilter;
+    }
+
     const count = await exerciseObject.countDocuments(query);
     let logsQuery = exerciseObject.find(query).sort({ date: 1 });
     if (limit) logsQuery = logsQuery.limit(Number(limit));
